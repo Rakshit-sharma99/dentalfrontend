@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
 
     async function checkLogin() {
         try {
-            const res = await fetch("http://localhost:3000/user/check", {
+            const res = await fetch(`${API_URL}/user/check`, {
                 credentials: "include", // essential for cookies
             });
             const data = await res.json();

@@ -8,7 +8,7 @@ export function AdminAppointments() {
 
     async function loadAppointments() {
         try {
-            const res = await fetch("http://localhost:3000/appointment/view", {
+            const res = await fetch(`${API_URL}/appointment/view`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -26,7 +26,7 @@ export function AdminAppointments() {
     async function handleAction(id, action) {
         if (!window.confirm(`Are you sure you want to ${action} this appointment?`)) return;
         try {
-            const res = await fetch(`http://localhost:3000/appointment/${action}/${id}`, {
+            const res = await fetch(`${API_URL}/appointment/${action}/${id}`, {
                 method: "PUT",
                 credentials: "include",
             });

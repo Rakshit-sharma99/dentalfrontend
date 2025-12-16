@@ -1,6 +1,8 @@
+import { API_URL } from "../config";
+
 export function Logout() {
   async function handleLogout() {
-    const res = await fetch("http://localhost:3000/user/logout", {
+    const res = await fetch(`${API_URL}/user/logout`, {
       method: "POST",
       credentials: "include", // ⭐ cookie delete hogi
     });

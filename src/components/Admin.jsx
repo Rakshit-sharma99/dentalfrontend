@@ -5,7 +5,7 @@ export function Admin() {
 
   async function loadAppointments() {
     try {
-      const res = await fetch("http://localhost:3000/appointment/view", { method: "GET", credentials: "include" });
+      const res = await fetch(`${API_URL}/appointment/view`, { method: "GET", credentials: "include" });
       const data = await res.json();
       setAppointments(Array.isArray(data) ? data : []);
     } catch (err) { console.error(err); }

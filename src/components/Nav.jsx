@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FaTooth, FaBars, FaTimes } from "react-icons/fa";
 
+import { API_URL } from "../config";
+
 export function Nav() {
   const { user, setUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +25,7 @@ export function Nav() {
 
   async function handleLogout() {
     try {
-      await fetch("http://localhost:3000/user/logout", {
+      await fetch(`${API_URL}/user/logout`, {
         method: "POST",
         credentials: "include",
       });

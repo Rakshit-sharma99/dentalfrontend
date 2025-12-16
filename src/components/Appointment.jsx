@@ -78,7 +78,7 @@ export function Appointment() {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/appointment/appointment", {
+      const res = await fetch(`${API_URL}/appointment/appointment`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

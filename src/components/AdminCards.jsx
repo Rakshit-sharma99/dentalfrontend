@@ -3,7 +3,7 @@ export function AdminCards(props) {
   // ⭐ ACCEPT Appointment
   async function handleAccept() {
     const res = await fetch(
-      `http://localhost:3000/appointment/accept/${props._id}`,
+      `${API_URL}/appointment/accept/${props._id}`,
       {
         method: "PUT",
         credentials: "include",
@@ -20,7 +20,7 @@ export function AdminCards(props) {
   // ⭐ DECLINE Appointment
   async function handleDecline() {
     const res = await fetch(
-      `http://localhost:3000/appointment/decline/${props._id}`,
+      `${API_URL}/appointment/decline/${props._id}`,
       {
         method: "PUT",
         credentials: "include",
@@ -42,7 +42,7 @@ export function AdminCards(props) {
     if (!confirmDelete) return;
 
     const res = await fetch(
-      `http://localhost:3000/appointment/delete/${props._id}`,
+      `${API_URL}/appointment/delete/${props._id}`,
       {
         method: "DELETE",
         credentials: "include",

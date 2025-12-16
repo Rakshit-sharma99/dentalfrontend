@@ -7,7 +7,7 @@ export function MyAppointments() {
 
   async function fetchMyAppointments() {
     try {
-      const res = await fetch("http://localhost:3000/appointment/myAppointments", {
+      const res = await fetch(`${API_URL}/appointment/myAppointments`, {
         method: "GET",
         credentials: "include",
       });
