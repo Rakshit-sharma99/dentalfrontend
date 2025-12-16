@@ -1,0 +1,90 @@
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { FaTooth, FaBars, FaTimes } from "react-icons/fa";
+
+export function Nav() {
+  const { user, setUser } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Hide nav on admin routes
+  if (location.pathname.startsWith("/admin")) return null;
+
+  const isActive = (path) => location.pathname === path ? "active" : "";
+
+  async function handleLogout() {
+    try {
+      await fetch("http://localhost:3000/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      setUser(null);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  }
+
+  return (
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      <div className="container nav-content">
+        <Link to="/" className="nav-brand" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <FaTooth size={28} color="#0072ff" />
+          <span>DentalCare</span>
+        </Link>
+
+        <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <FaTimes /> : <FaBars />}
+        </button>
+
+        <div className={`nav-links ${isOpen ? "open" : ""}`}>
+          <Link to="/" className={`nav-link ${isActive("/")}`} onClick={() => setIsOpen(false)}>Home</Link>
+          <Link to="/services" className={`nav-link ${isActive("/services")}`} onClick={() => setIsOpen(false)}>Services</Link>
+
+          {/* User Links - HIDE if Admin */}
+          {user?.role !== "admin" && (
+            <>
+              <Link to="/appointment" className={`nav-link ${isActive("/appointment")}`} onClick={() => setIsOpen(false)}>Book Appointment</Link>
+              {user && (
+                <Link to="/myappointments" className={`nav-link ${isActive("/myappointments")}`} onClick={() => setIsOpen(false)}>My Appointments</Link>
+              )}
+            </>
+          )}
+
+          {/* Admin Link */}
+          {user?.role === "admin" && (
+            <Link to="/admin" className={`nav-link ${isActive("/admin")}`} style={{ color: "#d946ef", fontWeight: "bold" }} onClick={() => setIsOpen(false)}>Admin Panel</Link>
+          )}
+
+          {/* Auth Buttons */}
+          {!user ? (
+            <>
+              <Link to="/login" className="nav-link" onClick={() => setIsOpen(false)}>Login</Link>
+              <Link to="/signup">
+                <button className="btn-primary" style={{ padding: "8px 24px", fontSize: "0.9rem" }} onClick={() => setIsOpen(false)}>
+                  Sign Up
+                </button>
+              </Link>
+            </>
+          ) : (
+            <button onClick={handleLogout} className="logout-btn-container">
+              <span className="logout-text">Logout</span>
+              <div className="logout-profile-circle">
+                {user.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+              </div>
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}
