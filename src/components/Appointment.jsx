@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
+import { API_URL } from "../config";
 
 export function Appointment() {
   const { user } = useAuth();
@@ -78,7 +79,7 @@ export function Appointment() {
     };
 
     try {
-      const res = await fetch(`${API_URL}/appointment/appointment`, {
+      const res = await fetch(`${API_URL}/appointment`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -93,6 +94,7 @@ export function Appointment() {
         setError(data.message || (data.errors && data.errors[0]?.msg) || "Booking failed");
       }
     } catch (err) {
+      console.error("Booking Error:", err);
       setError("Server connection failed. Please try again.");
     } finally {
       setLoading(false);

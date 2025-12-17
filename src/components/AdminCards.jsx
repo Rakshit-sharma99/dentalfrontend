@@ -1,3 +1,6 @@
+
+import { API_URL } from "../config";
+
 export function AdminCards(props) {
 
   // ⭐ ACCEPT Appointment

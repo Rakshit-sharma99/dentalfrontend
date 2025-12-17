@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaCalendarCheck, FaClock, FaCommentDots } from "react-icons/fa";
+import { API_URL } from "../config";
 
 export function MyAppointments() {
   const [apps, setApps] = useState([]);

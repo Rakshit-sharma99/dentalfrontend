@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaSearch } from "react-icons/fa";
+import { API_URL } from "../config";
 
 export function AdminAppointments() {
     const [appointments, setAppointments] = useState([]);
