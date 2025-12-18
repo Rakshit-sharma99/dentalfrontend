@@ -7,6 +7,8 @@ export function AdminAppointments() {
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
+    const [loadingAction, setLoadingAction] = useState(null);
+
     async function loadAppointments() {
         try {
             const res = await fetch(`${API_URL}/appointment/view`, {
@@ -26,18 +28,24 @@ export function AdminAppointments() {
 
     async function handleAction(id, action) {
         if (!window.confirm(`Are you sure you want to ${action} this appointment?`)) return;
+
+        setLoadingAction(id); // Start loading for this specific ID
         try {
             const res = await fetch(`${API_URL}/appointment/${action}/${id}`, {
                 method: "PUT",
                 credentials: "include",
             });
             if (res.ok) {
+                alert(`Appointment ${action}ed successfully!`);
                 loadAppointments();
             } else {
-                alert("Action failed");
+                alert("Action failed. Please try again.");
             }
         } catch (err) {
             console.error(err);
+            alert("Server error. Please check your connection.");
+        } finally {
+            setLoadingAction(null); // Stop loading
         }
     }
 
@@ -117,11 +125,31 @@ export function AdminAppointments() {
                                         <div style={{ display: "flex", gap: "8px" }}>
                                             {(!apt.status || apt.status === "pending") && (
                                                 <>
-                                                    <button onClick={() => handleAction(apt._id, "accept")} className="btn-primary" style={{ padding: "8px", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", background: "#22c55e", boxShadow: "none" }} title="Accept">
-                                                        <FaCheck size={12} />
+                                                    <button
+                                                        onClick={() => handleAction(apt._id, "accept")}
+                                                        disabled={loadingAction === apt._id}
+                                                        className="btn-primary"
+                                                        style={{ padding: "8px", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", background: "#22c55e", boxShadow: "none", opacity: loadingAction === apt._id ? 0.7 : 1 }}
+                                                        title="Accept"
+                                                    >
+                                                        {loadingAction === apt._id ? (
+                                                            <div className="spinner-border spinner-border-sm" style={{ width: "12px", height: "12px", border: "2px solid white", borderTop: "2px solid transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
+                                                        ) : (
+                                                            <FaCheck size={12} />
+                                                        )}
                                                     </button>
-                                                    <button onClick={() => handleAction(apt._id, "decline")} className="btn-danger" style={{ padding: "8px", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }} title="Decline">
-                                                        <FaTimes size={12} />
+                                                    <button
+                                                        onClick={() => handleAction(apt._id, "decline")}
+                                                        disabled={loadingAction === apt._id}
+                                                        className="btn-danger"
+                                                        style={{ padding: "8px", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", opacity: loadingAction === apt._id ? 0.7 : 1 }}
+                                                        title="Decline"
+                                                    >
+                                                        {loadingAction === apt._id ? (
+                                                            <div className="spinner-border spinner-border-sm" style={{ width: "12px", height: "12px", border: "2px solid white", borderTop: "2px solid transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
+                                                        ) : (
+                                                            <FaTimes size={12} />
+                                                        )}
                                                     </button>
                                                 </>
                                             )}
@@ -133,6 +161,12 @@ export function AdminAppointments() {
                     </tbody>
                 </table>
             </div>
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 }

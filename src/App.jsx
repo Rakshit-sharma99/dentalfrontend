@@ -12,6 +12,10 @@ import { AdminLayout } from "./components/AdminLayout";
 import { AdminAppointments } from "./components/AdminAppointments";
 import { UserLayout } from "./components/UserLayout";
 
+import { Profile } from "./components/Profile";
+import { ForgotPassword } from "./components/ForgotPassword";
+import { ResetPassword } from "./components/ResetPassword";
+
 function App() {
   return (
     <>
@@ -25,6 +29,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/myappointments" element={<MyAppointments />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Route>
 
         {/* ADMIN ROUTES (No User Nav) */}

@@ -34,6 +34,7 @@ export function Login() {
       await checkLogin(); // Update global context
       navigate("/"); // Redirect to home
     } catch (err) {
+      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -73,6 +74,9 @@ export function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div style={{ textAlign: "right", marginTop: "8px" }}>
+              <Link to="/forgot-password" style={{ fontSize: "0.85rem", color: "#64748b", textDecoration: "none" }}>Forgot Password?</Link>
+            </div>
           </div>
 
           <button disabled={loading} className="btn-primary" style={{ width: "100%", opacity: loading ? 0.7 : 1 }}>

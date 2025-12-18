@@ -68,6 +68,29 @@ export function Nav() {
           )}
 
           {/* Auth Buttons */}
+          {/*!user ? (
+            <>
+              <Link to="/login" className="nav-link" onClick={() => setIsOpen(false)}>Login</Link>
+              <Link to="/signup">
+                <button className="btn-primary" style={{ padding: "8px 24px", fontSize: "0.9rem" }} onClick={() => setIsOpen(false)}>
+                  Sign Up
+                </button>
+              </Link>
+            </>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+              <Link to="/profile" className={`nav-link ${isActive("/profile")}`} onClick={() => setIsOpen(false)}>
+                Profile
+              </Link>
+              <button onClick={handleLogout} className="logout-btn-container">
+                <span className="logout-text">Logout</span>
+                <div className="logout-profile-circle">
+                  {user.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+                </div>
+              </button>
+            </div>
+          )*/}
+          {/* Auth Buttons */}
           {!user ? (
             <>
               <Link to="/login" className="nav-link" onClick={() => setIsOpen(false)}>Login</Link>
@@ -78,12 +101,48 @@ export function Nav() {
               </Link>
             </>
           ) : (
-            <button onClick={handleLogout} className="logout-btn-container">
-              <span className="logout-text">Logout</span>
-              <div className="logout-profile-circle">
-                {user.name ? user.name.substring(0, 2).toUpperCase() : "U"}
-              </div>
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <Link to="/profile" style={{ textDecoration: 'none' }} onClick={() => setIsOpen(false)}>
+                <div
+                  className="logout-profile-circle"
+                  title="Go to Profile"
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                    color: "white",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "bold",
+                    fontSize: "1.1rem",
+                    boxShadow: "0 4px 10px rgba(37, 99, 235, 0.2)",
+                    border: "2px solid white"
+                  }}
+                >
+                  {user.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+                </div>
+              </Link>
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: "#fee2e2",
+                  color: "#ef4444",
+                  border: "none",
+                  padding: "8px 20px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                  fontWeight: "600",
+                  transition: "background 0.2s"
+                }}
+                onMouseOver={(e) => e.target.style.background = "#fecaca"}
+                onMouseOut={(e) => e.target.style.background = "#fee2e2"}
+              >
+                Logout
+              </button>
+            </div>
           )}
         </div>
       </div>
