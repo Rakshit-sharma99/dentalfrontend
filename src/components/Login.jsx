@@ -1,89 +1,163 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
 import { API_URL } from "../config";
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { checkLogin } = useAuth();
   const navigate = useNavigate();
+  const { checkLogin } = useAuth();
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/user/login`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.msg || "Login failed");
+        setError(data.msg || "Login failed");
+        return;
       }
 
-      await checkLogin(); // Update global context
-      navigate("/"); // Redirect to home
+      await checkLogin();
+
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError("Server not responding");
     }
-  }
+  };
 
   return (
-    <div className="container" style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="glass-card animate-fade-in" style={{ padding: "40px", width: "100%", maxWidth: "450px" }}>
-        <h2 style={{ textAlign: "center", marginBottom: "8px", background: "var(--primary-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Welcome Back</h2>
-        <p style={{ textAlign: "center", color: "var(--text-muted)", marginBottom: "32px" }}>Sign in to manage your appointments</p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background:
+          "linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08))",
+        padding: "24px",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          width: "100%",
+          maxWidth: "420px",
+          background: "rgba(255,255,255,0.9)",
+          backdropFilter: "blur(16px)",
+          borderRadius: "24px",
+          padding: "36px 32px",
+          boxShadow:
+            "0 20px 40px rgba(31,38,135,0.15)",
+          border: "1px solid rgba(255,255,255,0.6)",
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "24px",
+            fontSize: "28px",
+            fontWeight: "800",
+            background:
+              "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Welcome Back
+        </h2>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: "28px",
+            color: "#64748b",
+            fontSize: "14px",
+          }}
+        >
+          Login to manage your appointments
+        </p>
 
         {error && (
-          <div style={{ background: "#fee2e2", color: "#ef4444", padding: "12px", borderRadius: "8px", marginBottom: "20px", fontSize: "0.9rem", textAlign: "center" }}>
+          <div
+            style={{
+              background: "#fee2e2",
+              color: "#991b1b",
+              padding: "10px 14px",
+              borderRadius: "12px",
+              marginBottom: "16px",
+              fontSize: "14px",
+              textAlign: "center",
+            }}
+          >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "20px" }}>
-            <label>Email Address</label>
-            <input
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        <div style={{ marginBottom: "16px" }}>
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-          <div style={{ marginBottom: "32px" }}>
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <div style={{ marginBottom: "24px" }}>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-          <button disabled={loading} className="btn-primary" style={{ width: "100%", opacity: loading ? 0.7 : 1 }}>
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+        <button
+          type="submit"
+          className="btn-primary"
+          style={{ width: "100%", justifyContent: "center" }}
+        >
+          Login
+        </button>
 
-        <p style={{ textAlign: "center", marginTop: "24px", color: "var(--text-muted)", fontSize: "0.95rem" }}>
-          Don't have an account? <Link to="/signup" style={{ color: "#0072ff", fontWeight: "600", textDecoration: "none" }}>Sign up</Link>
+        <p
+          style={{
+            marginTop: "20px",
+            textAlign: "center",
+            fontSize: "14px",
+            color: "#64748b",
+          }}
+        >
+          Don’t have an account?{" "}
+          <span
+            style={{
+              color: "#3b82f6",
+              fontWeight: "600",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/signup")}
+          >
+            Sign up
+          </span>
         </p>
-      </div>
+      </form>
     </div>
   );
 }

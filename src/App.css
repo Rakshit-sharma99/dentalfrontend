@@ -523,3 +523,88 @@ th {
     font-weight: 600;
     color: var(--text-muted);
 }
+/* ========================= */
+/* USER PROFILE (NAVBAR) */
+/* ========================= */
+
+.profile-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Profile Avatar Circle */
+.profile-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+    transition: transform var(--transition-bounce), box-shadow var(--transition-fast);
+}
+
+.profile-circle:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6);
+}
+
+/* Dropdown */
+.profile-dropdown {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    min-width: 180px;
+
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+
+    overflow: hidden;
+    z-index: 999;
+    animation: fadeIn 0.25s var(--ease-smooth);
+}
+
+/* Dropdown Buttons */
+.profile-dropdown button {
+    width: 100%;
+    padding: 14px 18px;
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.profile-dropdown button:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+/* Divider effect */
+.profile-dropdown button:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+    .profile-dropdown {
+        right: 12px;
+    }
+}

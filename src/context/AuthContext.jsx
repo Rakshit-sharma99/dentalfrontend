@@ -1,42 +1,44 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { API_URL } from "../config";
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    async function checkLogin() {
-        try {
-            const res = await fetch(`${API_URL}/user/check`, {
-                credentials: "include", // essential for cookies
-            });
-            const data = await res.json();
+  const checkLogin = async () => {
+    try {
+      const res = await fetch(`${API_URL}/user/check`, {
+        credentials: "include",
+      });
 
-            if (data.loggedIn) {
-                setUser(data.user);
-            } else {
-                setUser(null);
-            }
-        } catch (error) {
-            console.error("Auth check failed", error);
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+
+      const data = await res.json();
+      setUser(data.loggedIn ? data.user : null);
+    } catch (err) {
+      console.error("Auth check failed", err);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() => {
-        checkLogin();
-    }, []);
+  useEffect(() => {
+    checkLogin();
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ user, setUser, checkLogin, loading }}>
-            {!loading && children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ user, setUser, checkLogin, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 }

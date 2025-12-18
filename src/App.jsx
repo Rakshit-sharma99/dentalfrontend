@@ -11,21 +11,24 @@ import { MyAppointments } from "./components/MyAppointments";
 import { AdminLayout } from "./components/AdminLayout";
 import { AdminAppointments } from "./components/AdminAppointments";
 import { UserLayout } from "./components/UserLayout";
+import { Profile } from "./components/Profile";
+
 
 function App() {
   return (
     <>
       <Routes>
 
-        {/* PUBLIC / USER ROUTES */}
-        <Route element={<UserLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/appointment" element={<Appointment />} />
-          <Route path="/services" element={<Service />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/myappointments" element={<MyAppointments />} />
-        </Route>
+   <Route element={<UserLayout />}>
+  <Route path="/" element={<Home />} />
+  <Route path="/appointment" element={<Appointment />} />
+  <Route path="/services" element={<Service />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/myappointments" element={<MyAppointments />} />
+  <Route path="/profile" element={<Profile />} />
+</Route>
+
 
         {/* ADMIN ROUTES (No User Nav) */}
         <Route path="/admin" element={<AdminLayout />}>
