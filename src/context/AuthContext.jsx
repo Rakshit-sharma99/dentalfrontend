@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={{ user, setUser, checkLogin, loading }}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 }
