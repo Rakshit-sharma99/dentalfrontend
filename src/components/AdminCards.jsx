@@ -1,5 +1,6 @@
 
 import { API_URL } from "../config";
+import toast from 'react-hot-toast';
 
 export function AdminCards(props) {
 
@@ -15,7 +16,7 @@ export function AdminCards(props) {
     );
 
     if (res.ok) {
-      alert("Appointment Accepted ✅");
+      toast.success("Appointment Accepted ✅");
       props.refresh(); // Refresh UI
     }
   }
@@ -32,7 +33,7 @@ export function AdminCards(props) {
     );
 
     if (res.ok) {
-      alert("Appointment Declined ❌");
+      toast.success("Appointment Declined ❌");
       props.refresh(); // Refresh UI
     }
   }
@@ -54,7 +55,7 @@ export function AdminCards(props) {
     );
 
     if (res.ok) {
-      alert("Appointment Deleted 🗑️");
+      toast.success("Appointment Deleted 🗑️");
       props.refresh(); // Refresh after deletion
     }
   }

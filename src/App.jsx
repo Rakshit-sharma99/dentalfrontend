@@ -16,9 +16,12 @@ import { Profile } from "./components/Profile";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { ResetPassword } from "./components/ResetPassword";
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <>
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
       <Routes>
 
         {/* PUBLIC / USER ROUTES */}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaSearch } from "react-icons/fa";
 import { API_URL } from "../config";
+import toast from 'react-hot-toast';
 
 export function AdminAppointments() {
     const [appointments, setAppointments] = useState([]);
@@ -36,14 +37,14 @@ export function AdminAppointments() {
                 credentials: "include",
             });
             if (res.ok) {
-                alert(`Appointment ${action}ed successfully!`);
+                toast.success(`Appointment ${action}ed successfully!`);
                 loadAppointments();
             } else {
-                alert("Action failed. Please try again.");
+                toast.error("Action failed. Please try again.");
             }
         } catch (err) {
             console.error(err);
-            alert("Server error. Please check your connection.");
+            toast.error("Server error. Please check your connection.");
         } finally {
             setLoadingAction(null); // Stop loading
         }

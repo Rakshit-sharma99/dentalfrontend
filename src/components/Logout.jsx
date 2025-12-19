@@ -1,4 +1,5 @@
 import { API_URL } from "../config";
+import toast from 'react-hot-toast';
 
 export function Logout() {
   async function handleLogout() {
@@ -8,7 +9,7 @@ export function Logout() {
     });
 
     const data = await res.json();
-    alert(data.msg);
+    toast.success(data.msg);
 
     // Optionally reload or navigate
     window.location.reload();

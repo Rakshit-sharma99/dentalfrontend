@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaCalendarCheck, FaSignOutAlt, FaKey } from "react-icons/fa";
 import { API_URL } from "../config";
+import toast from 'react-hot-toast';
 
 export function Profile() {
     const { user, setUser } = useAuth(); // Assuming logout might be available in context, else we handle it manually
@@ -35,13 +36,13 @@ export function Profile() {
                 // Update local context
                 setUser(prev => ({ ...prev, name: data.user.name }));
                 setIsEditing(false);
-                alert("Name updated successfully!");
+                toast.success("Name updated successfully!");
             } else {
-                alert(data.msg || "Update failed");
+                toast.error(data.msg || "Update failed");
             }
         } catch (err) {
             console.error("Profile update error", err);
-            alert("Server connection failed");
+            toast.error("Server connection failed");
         } finally {
             setLoading(false);
         }
