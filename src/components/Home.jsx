@@ -89,7 +89,7 @@ export function Home() {
           <h2 className="reveal-on-scroll" style={{ fontSize: "2.5rem", marginBottom: "40px", textAlign: "center" }}>Visit Our Clinic</h2>
           <div className="reveal-on-scroll glass-card" style={{ padding: "16px", overflow: "hidden" }}>
             <iframe
-              title="Clinic Location" lllllllllll
+              title="Clinic Location"  
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d109149.2367811455!2d75.63883216731777!3d31.25081367807871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391af53132299b43%3A0x150c4705b4fda48e!2sModern%20Dental%20Clinic%20%7C%20Best%20dentist%20in%20Phagwara%20%7C%20Best%20Oral%20Surgeon%20in%20Phagwara%20%7C%20Dentist%20near%20Lpu%20%7C%20Dr%20Riar%20&#39;s%20Dental%20Clinic!5e0!3m2!1sen!2sin!4v1765863588475!5m2!1sen!2sin"
               width="100%"
               height="450"
