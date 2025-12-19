@@ -39,12 +39,36 @@ export function AdminCards(props) {
   }
 
   // ⭐ DELETE Appointment
-  async function handleDelete() {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this appointment?"
-    );
-    if (!confirmDelete) return;
+  function handleDelete() {
+    toast((t) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <p style={{ margin: 0, fontWeight: "500" }}>Delete this appointment?</p>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              performDelete();
+            }}
+            style={{
+              padding: "6px 12px", background: "#ef4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer"
+            }}
+          >
+            Yes, Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            style={{
+              padding: "6px 12px", background: "#e5e7eb", color: "#374151", border: "none", borderRadius: "4px", cursor: "pointer"
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ));
+  }
 
+  async function performDelete() {
     const res = await fetch(
       `${API_URL}/appointment/delete/${props._id}`,
       {

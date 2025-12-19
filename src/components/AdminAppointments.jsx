@@ -27,9 +27,42 @@ export function AdminAppointments() {
         loadAppointments();
     }, []);
 
-    async function handleAction(id, action) {
-        if (!window.confirm(`Are you sure you want to ${action} this appointment?`)) return;
+    function handleAction(id, action) {
+        toast((t) => (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <p style={{ margin: 0, fontWeight: "500" }}>{action} this appointment?</p>
+                <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                        onClick={() => {
+                            toast.dismiss(t.id);
+                            performAction(id, action);
+                        }}
+                        style={{
+                            padding: "6px 12px",
+                            background: action === 'delete' || action === 'decline' ? "#ef4444" : "#22c55e",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textTransform: "capitalize"
+                        }}
+                    >
+                        Yes, {action}
+                    </button>
+                    <button
+                        onClick={() => toast.dismiss(t.id)}
+                        style={{
+                            padding: "6px 12px", background: "#e5e7eb", color: "#374151", border: "none", borderRadius: "4px", cursor: "pointer"
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        ), { duration: 5000 });
+    }
 
+    async function performAction(id, action) {
         setLoadingAction(id); // Start loading for this specific ID
         try {
             const res = await fetch(`${API_URL}/appointment/${action}/${id}`, {
