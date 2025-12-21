@@ -1,0 +1,195 @@
+/* Premium Global Styles */
+:root {
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.5);
+    --secondary: #8b5cf6;
+    --dark-bg: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    /* Variables for reused colors */
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --glass-input-bg: rgba(255, 255, 255, 0.03);
+
+    --glow-color: rgba(59, 130, 246, 0.15);
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* Glassmorphism */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-input {
+    background: var(--glass-input-bg);
+    border: 1px solid var(--glass-border);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* Gradients */
+.text-gradient {
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gradient:hover {
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: translateY(-2px);
+}
+
+/* Animated Background Mesh */
+.mesh-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.mesh-blob {
+    position: absolute;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 10s infinite ease-in-out;
+}
+
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: var(--primary);
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: var(--secondary);
+    animation-delay: 5s;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(20px, 30px) scale(1.1);
+    }
+
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+/* Utilities */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.full-screen {
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Screen Glow Effect */
+.screen-glow {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), var(--glow-color), transparent 40%);
+}
+
+/* Custom Toast Styles */
+.premium-toast {
+    background: rgba(15, 23, 42, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    padding: 16px !important;
+    border-radius: 16px !important;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+
+    /* Nav */
+    .desktop-links {
+        display: none !important;
+    }
+
+    .mobile-toggle {
+        display: block !important;
+    }
+
+    .nav-logo-icon {
+        display: none !important;
+    }
+
+    /* Footer - Hide Brand and Links sections, keep Contact */
+    .brand,
+    .links {
+        display: none !important;
+    }
+
+    .footer-content {
+        gap: 20px;
+        padding-bottom: 20px;
+    }
+
+    .footer-section h3 {
+        text-align: center;
+    }
+
+    /* General Mobile Padding Fixes */
+    .full-screen {
+        padding: 80px 15px !important;
+        /* Reduce padding on mobile */
+    }
+
+    .glass-panel {
+        padding: 20px !important;
+    }
+}

@@ -66,17 +66,17 @@ export function Admin() {
 
 function StatCard({ title, value, color }) {
   const colors = {
-    blue: { bg: "rgba(0,114,255,0.1)", text: "#0072ff" },
-    green: { bg: "rgba(67,233,123,0.1)", text: "#10b981" },
-    yellow: { bg: "rgba(252,211,77,0.1)", text: "#f59e0b" },
-    purple: { bg: "rgba(147, 51, 234, 0.1)", text: "#9333ea" },
+    blue: { bg: "rgba(59, 130, 246, 0.1)", text: "#60a5fa" },
+    green: { bg: "rgba(34, 197, 94, 0.1)", text: "#4ade80" },
+    yellow: { bg: "rgba(234, 179, 8, 0.1)", text: "#facc15" },
+    purple: { bg: "rgba(168, 85, 247, 0.1)", text: "#c084fc" },
   };
   const theme = colors[color] || colors.blue;
 
   return (
-    <div className="glass-card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div className="glass-card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px", borderLeft: `4px solid ${theme.text}` }}>
       <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>{title}</span>
-      <span style={{ fontSize: "2rem", fontWeight: "700", color: theme.text }}>{value}</span>
+      <span style={{ fontSize: "2.5rem", fontWeight: "700", color: theme.text }}>{value}</span>
     </div>
   );
 }

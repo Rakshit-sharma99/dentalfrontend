@@ -1,234 +1,155 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaCalendarCheck, FaSignOutAlt, FaKey } from "react-icons/fa";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+import { FaUser, FaEnvelope, FaCalendarAlt, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { API_URL } from "../config";
-import toast from 'react-hot-toast';
 
-export function Profile() {
-    const { user, setUser } = useAuth(); // Assuming logout might be available in context, else we handle it manually
-    const navigate = useNavigate();
-    const [appointmentCount, setAppointmentCount] = useState(0);
+export const Profile = () => {
+    const { user, setUser } = useAuth();
+    const [appointments, setAppointments] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [newName, setNewName] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [newName, setNewName] = useState(user?.name || "");
+    const [loading, setLoading] = useState(true);
 
-    // Initialize newName with current name when user loads
     useEffect(() => {
-        if (user?.name) setNewName(user.name);
+        if (user) {
+            setNewName(user.name);
+            fetchAppointments();
+        }
     }, [user]);
 
-    async function handleUpdateProfile() {
-        if (!newName.trim()) return;
-        setLoading(true);
+    const fetchAppointments = async () => {
         try {
-            const res = await fetch(`${API_URL}/user/update-profile`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ name: newName }),
-                credentials: "include"
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                // Update local context
-                setUser(prev => ({ ...prev, name: data.user.name }));
-                setIsEditing(false);
-                toast.success("Name updated successfully!");
-            } else {
-                toast.error(data.msg || "Update failed");
-            }
-        } catch (err) {
-            console.error("Profile update error", err);
-            toast.error("Server connection failed");
+            const res = await axios.get(`${API_URL}/appointment/my`, { withCredentials: true });
+            setAppointments(res.data);
+        } catch (error) {
+            console.error("Failed to fetch appointments", error);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    // Logout Logic
-    async function handleLogout() {
+    const handleUpdateProfile = async () => {
+        if (!newName.trim()) return toast.error("Name cannot be empty");
         try {
-            await fetch(`${API_URL}/user/logout`, { method: "POST", credentials: "include" });
-            setUser(null);
-            navigate("/login");
-        } catch (err) {
-            console.error("Logout failed", err);
+            // Assuming there's an endpoint to update user profile, if not, this acts as a placeholder or needs backend implementation.
+            // For now, let's assume /user/update exists or we simulate it.
+            await axios.put(`${API_URL}/user/update`, { name: newName }, { withCredentials: true });
+
+            setUser({ ...user, name: newName });
+            setIsEditing(false);
+            toast.success("Profile updated successfully!");
+        } catch (error) {
+            toast.error("Failed to update profile.");
+            console.error(error);
         }
-    }
+    };
 
-    // Fetch Appointment Stats
-    useEffect(() => {
-        async function fetchStats() {
-            try {
-                const res = await fetch(`${API_URL}/appointment/myAppointments`, {
-                    credentials: "include"
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setAppointmentCount(Array.isArray(data) ? data.length : 0);
-                }
-            } catch (err) {
-                console.error("Error fetching stats", err);
-            }
-        }
-        if (user) fetchStats();
-    }, [user]);
-
-    if (!user) {
-        return (
-            <div style={{ minHeight: "80vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <p>Loading Profile...</p>
-            </div>
-        );
-    }
-
-    // Get Initials
-    const initials = user.name
-        ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().substring(0, 2)
-        : "U";
+    if (!user) return <div className="full-screen flex-center">Loading...</div>;
 
     return (
-        <div className="container" style={{ minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+        <div className="full-screen" style={{ padding: "120px 20px", position: "relative" }}>
+            <div className="mesh-bg">
+                <div className="mesh-blob blob-1" style={{ width: '400px', height: '400px', top: '10%', left: '30%' }}></div>
+            </div>
 
-            <div className="glass-card animate-fade-in" style={{ width: "100%", maxWidth: "400px", padding: "40px", textAlign: "center", borderRadius: "24px" }}>
-
-                {/* Header */}
-                <h2 style={{ color: "#3b82f6", marginBottom: "8px", fontWeight: "700" }}>Profile Dashboard</h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "32px" }}>Manage your account and appointments</p>
-
-                {/* Avatar */}
-                <div style={{
-                    width: "130px",
-                    height: "130px",
-                    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                    borderRadius: "50%",
-                    margin: "0 auto 20px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)",
-                    position: "relative"
-                }}>
-                    <span style={{ fontSize: "3.5rem", fontWeight: "700", color: "white" }}>{initials}</span>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-panel"
+                style={{ maxWidth: "800px", margin: "0 auto", padding: "40px", borderRadius: "24px" }}
+            >
+                <div style={{ display: "flex", alignItems: "center", gap: "30px", marginBottom: "40px", flexWrap: "wrap" }}>
                     <div style={{
-                        position: "absolute",
-                        bottom: "8px",
-                        right: "8px",
-                        width: "24px",
-                        height: "24px",
-                        background: "#22c55e",
-                        border: "4px solid white",
-                        borderRadius: "50%"
-                    }}></div>
+                        width: "100px", height: "100px", borderRadius: "50%",
+                        background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: "2.5rem", fontWeight: "bold", color: "white",
+                        boxShadow: "0 10px 30px rgba(59, 130, 246, 0.3)"
+                    }}>
+                        {user.name?.charAt(0).toUpperCase()}
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "10px" }}>
+                            {isEditing ? (
+                                <input
+                                    className="glass-input"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    style={{ padding: "8px 16px", borderRadius: "8px", fontSize: "1.5rem", fontWeight: "bold", background: "rgba(0,0,0,0.2)" }}
+                                />
+                            ) : (
+                                <h1 style={{ margin: 0, fontSize: "2rem" }}>{user.name}</h1>
+                            )}
+
+                            {isEditing ? (
+                                <>
+                                    <button onClick={handleUpdateProfile} className="btn-gradient" style={{ padding: "8px", borderRadius: "8px", cursor: "pointer" }}><FaSave /></button>
+                                    <button onClick={() => setIsEditing(false)} style={{ padding: "8px", background: "transparent", border: "1px solid #ef4444", color: "#ef4444", borderRadius: "8px", cursor: "pointer" }}><FaTimes /></button>
+                                </>
+                            ) : (
+                                <button onClick={() => setIsEditing(true)} style={{ background: "transparent", border: "none", color: "#94a3b8", cursor: "pointer" }}><FaEdit size={20} /></button>
+                            )}
+                        </div>
+                        <p style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "1.1rem" }}>
+                            <FaEnvelope /> {user.email}
+                        </p>
+                    </div>
                 </div>
 
-                {/* User Info */}
-                <div style={{ marginBottom: "24px" }}>
-                    {isEditing ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}>
-                            <input
-                                type="text"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
+                <h2 style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "15px", marginBottom: "25px" }}>
+                    My Appointments
+                </h2>
+
+                {loading ? (
+                    <p>Loading appointments...</p>
+                ) : appointments.length > 0 ? (
+                    <div style={{ display: "grid", gap: "20px" }}>
+                        {appointments.map((apt) => (
+                            <motion.div
+                                key={apt._id}
+                                whileHover={{ scale: 1.01 }}
                                 style={{
-                                    padding: "8px 12px",
-                                    borderRadius: "8px",
-                                    border: "1px solid #cbd5e1",
-                                    fontSize: "1.1rem",
-                                    textAlign: "center",
-                                    width: "80%"
-                                }}
-                            />
-                            <div style={{ display: "flex", gap: "10px" }}>
-                                <button
-                                    onClick={handleUpdateProfile}
-                                    disabled={loading}
-                                    style={{
-                                        background: "#22c55e", color: "white", border: "none", padding: "8px 20px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "0.95rem"
-                                    }}
-                                >
-                                    {loading ? "Saving..." : "Save Changes"}
-                                </button>
-                                <button
-                                    onClick={() => { setIsEditing(false); setNewName(user.name); }}
-                                    style={{
-                                        background: "#94a3b8", color: "white", border: "none", padding: "8px 20px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "0.95rem"
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-                            <h3 style={{ fontSize: "1.8rem", marginBottom: "4px", fontWeight: "700", color: "#1e293b" }}>{user.name}</h3>
-                            <button
-                                onClick={() => setIsEditing(true)}
-                                style={{
-                                    background: "#eff6ff", border: "1px solid #bfdbfe", color: "#3b82f6", padding: "4px 10px", borderRadius: "20px", cursor: "pointer", fontSize: "0.8rem", fontWeight: "600", display: "flex", alignItems: "center", gap: "4px"
+                                    background: "rgba(255,255,255,0.03)",
+                                    padding: "20px",
+                                    borderRadius: "16px",
+                                    border: "1px solid rgba(255,255,255,0.05)",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    flexWrap: "wrap",
+                                    gap: "15px"
                                 }}
                             >
-                                ✎ Edit
-                            </button>
-                        </div>
-                    )}
-                </div>
-                <p style={{ color: "var(--text-muted)", marginBottom: "32px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "1.2rem" }}>✉️</span> {user.email}
-                </p>
-
-                {/* Status Badges */}
-                <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "32px" }}>
-                    <span style={{ background: "#e0f2fe", color: "#0369a1", padding: "6px 16px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "600" }}>
-                        ● {user.role || "user"}
-                    </span>
-                    <span style={{ background: "#dcfce7", color: "#15803d", padding: "6px 16px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "600" }}>
-                        ✓ Online
-                    </span>
-                </div>
-
-                {/* Stats Card */}
-                <div style={{ background: "rgba(255,255,255,0.6)", borderRadius: "20px", padding: "24px", marginBottom: "32px", border: "1px solid rgba(255,255,255,0.8)", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-                    <div style={{ fontSize: "3rem", fontWeight: "800", color: "#3b82f6", lineHeight: "1", marginBottom: "8px" }}>{appointmentCount}</div>
-                    <div style={{ color: "#64748b", fontSize: "0.95rem", fontWeight: "500" }}>Total Appointments</div>
-                </div>
-
-                {/* Actions */}
-                <Link to="/myappointments" style={{ textDecoration: "none" }}>
-                    <button className="btn-primary" style={{ width: "100%", marginBottom: "16px", padding: "12px", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", borderRadius: "12px" }}>
-                        <FaCalendarCheck /> View My Appointments
-                    </button>
-                </Link>
-
-                {/* Styled Logout Button */}
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "10px",
-                        background: "#fff1f2",
-                        color: "#e11d48",
-                        border: "1px solid #fda4af",
-                        borderRadius: "12px",
-                        fontSize: "1rem",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.background = "#ffe4e6"; }}
-                    onMouseOut={(e) => { e.currentTarget.style.background = "#fff1f2"; }}
-                >
-                    <FaSignOutAlt /> Logout
-                </button>
-
-            </div>
+                                <div>
+                                    <h3 style={{ margin: "0 0 5px 0", color: "#f1f5f9" }}>{apt.service || "Dental Checkup"}</h3>
+                                    <div style={{ display: "flex", gap: "20px", color: "#94a3b8", fontSize: "0.9rem" }}>
+                                        <span style={{ display: "flex", alignItems: "center", gap: "5px" }}><FaCalendarAlt /> {new Date(apt.date).toLocaleDateString()}</span>
+                                        <span>{apt.time}</span>
+                                    </div>
+                                </div>
+                                <span style={{
+                                    padding: "6px 12px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "600",
+                                    background: apt.status === 'Accepted' ? 'rgba(34, 197, 94, 0.2)' : apt.status === 'Declined' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(234, 179, 8, 0.2)',
+                                    color: apt.status === 'Accepted' ? '#4ade80' : apt.status === 'Declined' ? '#f87171' : '#facc15'
+                                }}>
+                                    {apt.status}
+                                </span>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
+                        <p>No appointments found.</p>
+                        <button className="btn-gradient" style={{ marginTop: "15px", padding: "10px 20px", borderRadius: "20px" }} onClick={() => window.location.href = '/appointment'}>
+                            Book Now
+                        </button>
+                    </div>
+                )}
+            </motion.div>
         </div>
     );
-}
+};

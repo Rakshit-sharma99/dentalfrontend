@@ -1,5 +1,7 @@
 
 import "./App.css";
+import "./Premium.css";
+import { useEffect } from "react";
 import { Admin } from "./components/Admin";
 import { Appointment } from "./components/Appointment";
 import { Home } from "./components/Home";
@@ -19,9 +21,31 @@ import { ResetPassword } from "./components/ResetPassword";
 import { Toaster } from 'react-hot-toast';
 
 function App() {
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
     <>
-      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+      <div className="screen-glow" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          className: 'premium-toast',
+          style: {
+            background: 'rgba(15, 23, 42, 0.9)',
+            color: '#fff',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }
+        }}
+      />
       <Routes>
 
         {/* PUBLIC / USER ROUTES */}

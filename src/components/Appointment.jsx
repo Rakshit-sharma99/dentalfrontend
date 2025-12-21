@@ -1,24 +1,16 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaCalendarAlt } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { FaCalendarCheck, FaClock, FaUser, FaEnvelope, FaPhone, FaNotesMedical, FaList } from "react-icons/fa";
+import { useLocation, Link } from "react-router-dom";
 import { API_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
 
-export function Appointment() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+export const Appointment = () => {
   const location = useLocation();
-
-  // Available services
-  const services = [
-    "General Consultation",
-    "Teeth Whitening",
-    "Root Canal Treatment",
-    "Dental Implants",
-    "Orthodontics (Braces)",
-    "Pediatric Dentistry",
-    "Oral Surgery"
-  ];
+  const { user } = useAuth();
+  const preSelectedService = location.state?.service || "";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,201 +18,236 @@ export function Appointment() {
     phone: "",
     date: "",
     time: "",
-    // Service from state or default
-    message: location.state?.service ? `Service Request: ${location.state.service}` : ""
+    reason: preSelectedService,
+    notes: ""
   });
-
-  // Also track separate service selection if needed, but backend often puts it in message or a specific field.
-  // The user asked for "Service selection option". I'll add a dropdown and append it to the message 
-  // OR if the backend allows a 'service' field. The current backend Appointment model wasn't explicitly analyzed for 'service' field,
-  // but looking at previous code 'message' was used. I'll stick to appending to message or just sending it as a field if backend ignores extra fields it's fine.
-  // Ideally I should check backend, but to be safe I'll put it in 'message' for the admin to see clearly.
-  // WAIT, I should check if I can modify backend. "integrate ... without altering backend logic". 
-  // So I MUST put it in 'message' as the backend likely only accepts {name, email, phone, date, time, message}.
-
-  const [selectedService, setSelectedService] = useState(location.state?.service || "");
-
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
 
-  // Pre-fill data
-  useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        name: user.name || "",
-        email: user.email || ""
-      }));
+  // Time Slots Generation (10:00 AM to 4:00 PM)
+  const timeSlots = [
+    "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00"
+  ];
+
+  const reasons = [
+    "General Consultation",
+    "Teeth Whitening",
+    "Root Canal",
+    "Dental Implants",
+    "Braces / Orthodontics",
+    "Tooth Extraction",
+    "Cleaning / Scaling",
+    "Other"
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.1 }
     }
-  }, [user]);
+  };
 
-  function handleChange(e) {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  }
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 }
+  };
 
-  async function handleSubmit(e) {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleTimeSelect = (time) => {
+    setFormData({ ...formData, time });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    if (!user) {
-      setError("Please login to book an appointment.");
-      setLoading(false);
-      return;
-    }
-
-    // Combine service into message for backend compatibility
-    const finalMessage = `[Service: ${selectedService}] ${formData.message}`;
-
-    const submissionData = {
-      ...formData,
-      message: finalMessage
-    };
-
     try {
-      const res = await fetch(`${API_URL}/appointment`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setSuccess(true);
-      } else {
-        setError(data.message || (data.errors && data.errors[0]?.msg) || "Booking failed");
+      setLoading(true);
+      const res = await axios.post(`${API_URL}/appointment`, formData, { withCredentials: true });
+      if (res.status === 201) {
+        toast.success("Appointment Confirmed! We'll see you soon.");
+        setFormData({ name: "", email: "", phone: "", date: "", time: "", reason: "", notes: "" });
       }
-    } catch (err) {
-      console.error("Booking Error:", err);
-      setError("Server connection failed. Please try again.");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Booking failed");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   // Get today's date for min attribute
   const today = new Date().toISOString().split("T")[0];
 
-  if (success) {
-    return (
-      <div className="container" style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div className="glass-card animate-fade-in" style={{ padding: "40px", maxWidth: "500px", textAlign: "center" }}>
-          <div style={{ width: "80px", height: "80px", background: "#dcfce7", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-            <FaCalendarAlt size={40} color="#166534" />
-          </div>
-          <h2 style={{ marginBottom: "16px", color: "var(--text-dark)" }}>Appointment Booked!</h2>
-          <p style={{ color: "var(--text-muted)", marginBottom: "32px" }}>
-            Thank you, <strong>{formData.name}</strong>. Your request for <strong>{selectedService}</strong> on <strong>{formData.date}</strong> has been received.
-          </p>
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
-            <Link to="/myappointments">
-              <button className="btn-primary">View My Appointments</button>
-            </Link>
-            <Link to="/">
-              <button className="btn-secondary">Go Home</button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container" style={{ padding: "40px 20px" }}>
-      <div className="glass-card animate-fade-in" style={{ maxWidth: "800px", margin: "0 auto", display: "flex", overflow: "hidden", flexDirection: "row", flexWrap: "wrap" }}>
+    <div className="full-screen flex-center" style={{ position: "relative", padding: "120px 20px" }}>
 
-        <div style={{ flex: "1.5", padding: "40px", minWidth: "300px" }}>
-          <h2 style={{ marginBottom: "8px" }}>Book an Appointment</h2>
-          <p style={{ color: "var(--text-muted)", marginBottom: "32px" }}>Select a service and time that works for you.</p>
-
-          {error && <div style={{ background: "#fee2e2", color: "#991b1b", padding: "12px", borderRadius: "8px", marginBottom: "20px" }}>{error}</div>}
-
-          <form onSubmit={handleSubmit}>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label>Select Service</label>
-              <select
-                value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
-                required
-              >
-                <option value="" disabled>-- Choose a Service --</option>
-                {services.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
-              <div>
-                <label>Name</label>
-                <input type="text" id="name" value={formData.name} onChange={handleChange} required placeholder="Your Name" />
-              </div>
-              <div>
-                <label>Phone</label>
-                <input type="tel" id="phone" value={formData.phone} onChange={handleChange} required placeholder="+91 XXXXX-XXXXX" maxLength="10" />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label>Email</label>
-              <input type="email" id="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
-              <div>
-                <label>Date</label>
-                {/* Restrict past dates */}
-                <input type="date" id="date" value={formData.date} onChange={handleChange} required min={today} />
-              </div>
-              {/* Time Slots (Simplified) */}
-              <div style={{ gridColumn: "1 / -1", marginTop: "16px" }}>
-                <label style={{ display: "block", marginBottom: "12px" }}>Select Time Slot</label>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "10px" }}>
-                  {["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"].map(slot => (
-                    <button
-                      type="button"
-                      key={slot}
-                      onClick={() => handleChange({ target: { id: "time", value: slot } })}
-                      style={{
-                        padding: "10px",
-                        borderRadius: "8px",
-                        border: formData.time === slot ? "2px solid #3b82f6" : "1px solid #e2e8f0",
-                        background: formData.time === slot ? "#eff6ff" : "white",
-                        color: formData.time === slot ? "#1d4ed8" : "inherit",
-                        fontWeight: formData.time === slot ? "600" : "400",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-                {/* Hidden input to satisfy required prop if standard submission used (but we use state) */}
-                <input type="hidden" id="time" value={formData.time} required />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: "32px" }}>
-              <label>Additional Notes</label>
-              <textarea id="message" value={formData.message} onChange={handleChange} rows="3" placeholder="Any specific concerns?"></textarea>
-            </div>
-
-            {!user ? (
-              <div style={{ textAlign: "center" }}>
-                <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>You must be logged in to book.</p>
-                <Link to="/login"><button type="button" className="btn-primary">Login to Book</button></Link>
-              </div>
-            ) : (
-              <button disabled={loading} className="btn-primary" style={{ width: "100%", opacity: loading ? 0.7 : 1 }}>
-                {loading ? "Booking..." : "Confirm Booking"}
-              </button>
-            )}
-          </form>
-        </div>
+      {/* Background */}
+      <div className="mesh-bg">
+        <div className="mesh-blob blob-1"></div>
+        <div className="mesh-blob blob-2"></div>
       </div>
+
+      <motion.div
+        className="glass-panel"
+        style={{
+          maxWidth: "1100px",
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+          gap: "50px",
+          padding: "40px",
+          borderRadius: "30px",
+          position: "relative",
+          zIndex: 10
+        }}
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        {/* Left Side: Information */}
+        <div style={{ color: "white" }}>
+          <motion.h1
+            variants={itemVariants}
+            style={{ fontSize: "3rem", fontWeight: "bold", lineHeight: 1.1, marginBottom: "20px" }}
+          >
+            Book Your <br />
+            <span className="text-gradient">Dream Smile</span>
+          </motion.h1>
+          <motion.p variants={itemVariants} style={{ fontSize: "1.1rem", opacity: 0.8, marginBottom: "40px" }}>
+            Experience the future of dental care.
+            Select your preferred slot and let us take care of the rest.
+          </motion.p>
+
+          <motion.div variants={itemVariants} style={{ marginBottom: "30px" }}>
+            <h3 style={{ marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px" }}><FaClock color="#a78bfa" /> Clinic Hours</h3>
+            <p style={{ opacity: 0.8 }}>Mon - Sat: 10:00 AM - 04:00 PM</p>
+            <p style={{ opacity: 0.6, fontSize: "0.9rem" }}>Sunday Closed</p>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <h3 style={{ marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px" }}><FaCalendarCheck color="#60a5fa" /> Why Choose Us?</h3>
+            <ul style={{ listStyle: "none", padding: 0, opacity: 0.8, lineHeight: "1.8" }}>
+              <li>✓ Zero Wait Policy</li>
+              <li>✓ Sterilized & Safe Environment</li>
+              <li>✓ Pain-Free Treatments</li>
+            </ul>
+          </motion.div>
+        </div>
+
+        {/* Right Side: Form */}
+        {/* Right Side: Form or Login Prompt */}
+        {!user ? (
+          <motion.div
+            variants={itemVariants}
+            className="glass-card"
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%"
+            }}
+          >
+            <FaUser size={50} color="#60a5fa" style={{ marginBottom: "20px" }} />
+            <h2 style={{ marginBottom: "16px", color: "white" }}>Login Required</h2>
+            <p style={{ color: "rgba(255,255,255,0.7)", marginBottom: "32px", fontSize: "1.1rem" }}>
+              Please sign in to book an appointment and track your history.
+            </p>
+            <div style={{ display: "flex", gap: "16px" }}>
+              <Link to="/login">
+                <button className="btn-gradient" style={{ padding: "12px 32px", borderRadius: "30px", fontSize: "1rem", cursor: "pointer", border: "none" }}>
+                  Login Now
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button className="glass-button" style={{ padding: "12px 32px", borderRadius: "30px", fontSize: "1rem", cursor: "pointer", border: "1px solid rgba(255,255,255,0.2)", color: "white", background: "transparent" }}>
+                  Sign Up
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+            {/* PERSONAL INFO */}
+            <motion.div variants={itemVariants} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+              <div className="glass-input-group" style={{ position: "relative" }}>
+                <FaUser style={{ position: "absolute", top: "50%", left: "15px", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                <input name="name" type="text" placeholder="Full Name" value={formData.name} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px" }} />
+              </div>
+              <div className="glass-input-group" style={{ position: "relative" }}>
+                <FaPhone style={{ position: "absolute", top: "50%", left: "15px", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                <input name="phone" type="tel" placeholder="Phone" value={formData.phone} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px" }} />
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="glass-input-group" style={{ position: "relative" }}>
+              <FaEnvelope style={{ position: "absolute", top: "50%", left: "15px", transform: "translateY(-50%)", color: "#94a3b8" }} />
+              <input name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px" }} />
+            </motion.div>
+
+            {/* REASON & NOTES */}
+            <motion.div variants={itemVariants} className="glass-input-group" style={{ position: "relative" }}>
+              <FaList style={{ position: "absolute", top: "50%", left: "15px", transform: "translateY(-50%)", color: "#94a3b8", zIndex: 1 }} />
+              <select name="reason" value={formData.reason} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px", appearance: "none", cursor: "pointer" }}>
+                <option value="" disabled>Select Reason for Booking</option>
+                {reasons.map(r => <option key={r} value={r} style={{ color: "black" }}>{r}</option>)}
+              </select>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="glass-input-group" style={{ position: "relative" }}>
+              <FaNotesMedical style={{ position: "absolute", top: "15px", left: "15px", color: "#94a3b8" }} />
+              <textarea name="notes" placeholder="Any specific issues or symptoms? (Optional)" value={formData.notes} onChange={handleChange} className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px", minHeight: "80px", resize: "vertical" }} />
+            </motion.div>
+
+            {/* DATE & TIME */}
+            <motion.div variants={itemVariants}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold", fontSize: "0.9rem", color: "#cbd5e1" }}>Select Date</label>
+              <input name="date" type="date" min={today} value={formData.date} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px", borderRadius: "12px", colorScheme: "dark" }} />
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold", fontSize: "0.9rem", color: "#cbd5e1" }}>Select Time Slot</label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "10px" }}>
+                {timeSlots.map(time => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => handleTimeSelect(time)}
+                    className={formData.time === time ? "btn-gradient" : "glass-input"}
+                    style={{
+                      padding: "8px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      textAlign: "center",
+                      fontSize: "0.9rem",
+                      border: formData.time === time ? "none" : "1px solid rgba(255,255,255,0.1)",
+                      background: formData.time === time ? "" : "rgba(255,255,255,0.05)"
+                    }}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={loading}
+              className="btn-gradient"
+              style={{ padding: "16px", fontSize: "1.1rem", fontWeight: "bold", borderRadius: "12px", cursor: "pointer", marginTop: "10px", opacity: loading ? 0.7 : 1 }}
+            >
+              {loading ? "Processing..." : "Confirm Booking"}
+            </motion.button>
+          </form>
+        )}
+      </motion.div>
     </div>
   );
-}
+};

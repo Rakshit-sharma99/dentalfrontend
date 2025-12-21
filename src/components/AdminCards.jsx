@@ -86,13 +86,14 @@ export function AdminCards(props) {
 
   return (
     <div
-      className="card"
+      className="glass-card"
       style={{
-        width: "18rem",
-        padding: "15px",
-        borderRadius: "12px",
-        backgroundColor: "#f9f9f9",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        width: "100%",
+        maxWidth: "350px",
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px"
       }}
     >
       <div className="card-body">
