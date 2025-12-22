@@ -22,7 +22,7 @@ export const Profile = () => {
 
     const fetchAppointments = async () => {
         try {
-            const res = await axios.get(`${API_URL}/appointment/my`, { withCredentials: true });
+            const res = await axios.get(`${API_URL}/appointment/myAppointments`, { withCredentials: true });
             setAppointments(res.data);
         } catch (error) {
             console.error("Failed to fetch appointments", error);

@@ -11,9 +11,7 @@ export const GoogleReviews = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                // Determine API URL (using API_URL config or default localhost)
-                const baseUrl = API_URL || "http://localhost:3000";
-                const res = await axios.get(`${baseUrl}/api/reviews`);
+                const res = await axios.get(`${API_URL}/api/reviews`);
 
                 // Map Google API or Mock structure to Component structure
                 // Google: author_name, profile_photo_url, rating, text
