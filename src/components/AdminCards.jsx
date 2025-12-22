@@ -102,11 +102,11 @@ export function AdminCards(props) {
           {props.name}
         </h5>
 
-        <p className="card-text"><strong>Email:</strong> {props.email}</p>
-        <p className="card-text"><strong>Phone:</strong> {props.phone}</p>
-        <p className="card-text"><strong>Date:</strong> {props.date}</p>
-        <p className="card-text"><strong>Time:</strong> {props.time}</p>
-        <p className="card-text"><strong>Status:</strong> {props.status}</p>
+        <p className="card-text" style={{ color: "#334155" }}><strong>Email:</strong> {props.email}</p>
+        <p className="card-text" style={{ color: "#334155" }}><strong>Phone:</strong> {props.phone}</p>
+        <p className="card-text" style={{ color: "#334155" }}><strong>Date:</strong> {props.date}</p>
+        <p className="card-text" style={{ color: "#334155" }}><strong>Time:</strong> {props.time}</p>
+        <p className="card-text" style={{ color: "#334155" }}><strong>Status:</strong> {props.status}</p>
 
         <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
           <button

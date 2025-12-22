@@ -18,20 +18,42 @@ export function AdminLayout() {
 
   const isActive = (path) => location.pathname === path ? "active" : "";
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc" }}>
+      {/* MOBILE TOGGLE BUTTON */}
+      <button
+        className="mobile-admin-toggle"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        style={{
+          position: "fixed", top: "15px", right: "15px", zIndex: 100,
+          background: "var(--bg-dark)", color: "white", border: "none",
+          padding: "10px", borderRadius: "8px", cursor: "pointer", display: "none"
+        }}
+      >
+        <FaChartBar size={24} />
+      </button>
+
       {/* SIDEBAR */}
-      <aside style={{ width: "260px", background: "#0f172a", color: "white", padding: "24px", display: "flex", flexDirection: "column", position: "fixed", height: "100%", left: 0, top: 0, zIndex: 10 }}>
+      <aside
+        className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+        style={{
+          width: "260px", background: "#0f172a", color: "white", padding: "24px",
+          display: "flex", flexDirection: "column", position: "fixed", height: "100%",
+          left: 0, top: 0, zIndex: 90, transition: "transform 0.3s ease-in-out"
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "40px", paddingLeft: "12px" }}>
           <FaTooth size={24} color="#00c6ff" />
           <h2 style={{ fontSize: "1.2rem", margin: 0 }}>DentalAdmin</h2>
         </div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
-          <Link to="/admin" className={`admin-link ${isActive("/admin")}`} style={navLinkStyle}>
+          <Link to="/admin" onClick={() => setSidebarOpen(false)} className={`admin-link ${isActive("/admin")}`} style={navLinkStyle}>
             <FaChartBar /> Dashboard
           </Link>
-          <Link to="/admin/appointments" className={`admin-link ${isActive("/admin/appointments")}`} style={navLinkStyle}>
+          <Link to="/admin/appointments" onClick={() => setSidebarOpen(false)} className={`admin-link ${isActive("/admin/appointments")}`} style={navLinkStyle}>
             <FaCalendarCheck /> Appointments
           </Link>
         </nav>
@@ -47,7 +69,18 @@ export function AdminLayout() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main style={{ marginLeft: "260px", padding: "40px", width: "100%", overflowX: "hidden" }}>
+      <main
+        className="admin-main"
+        style={{
+          marginLeft: "260px",
+          padding: "40px",
+          width: "100%",
+          overflowX: "hidden",
+          color: "#1e293b", // Enforce dark text
+          "--text-muted": "#64748b", // Override muted text for light theme
+          transition: "margin 0.3s ease-in-out"
+        }}
+      >
         <Outlet />
       </main>
     </div>

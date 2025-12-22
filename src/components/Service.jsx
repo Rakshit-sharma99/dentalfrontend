@@ -55,12 +55,10 @@ export function Service() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        className="responsive-grid"
         style={{
           maxWidth: "1200px",
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: "30px",
           position: "relative",
           zIndex: 10
         }}

@@ -50,9 +50,9 @@ export function Admin() {
           </thead>
           <tbody>
             {appointments.slice(-5).reverse().map(apt => (
-              <tr key={apt._id}>
+              <tr key={apt._id} style={{ color: "#1e293b" }}>
                 <td style={{ fontWeight: "500" }}>{apt.name}</td>
-                <td>{apt.date} <span style={{ fontSize: "0.8em", color: "#94a3b8" }}>at {apt.time}</span></td>
+                <td>{apt.date} <span style={{ fontSize: "0.8em", color: "#64748b" }}>at {apt.time}</span></td>
                 <td><Badge status={apt.status} /></td>
               </tr>
             ))}

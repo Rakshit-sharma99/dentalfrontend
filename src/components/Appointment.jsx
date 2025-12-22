@@ -72,7 +72,8 @@ export const Appointment = () => {
         setFormData({ name: "", email: "", phone: "", date: "", time: "", reason: "", notes: "" });
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Booking failed");
+      console.error("Booking Error Details:", error); // Debugging log
+      toast.error(error.response?.data?.message || "Booking failed. Check console for details.");
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,7 @@ export const Appointment = () => {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="full-screen flex-center" style={{ position: "relative", padding: "120px 20px" }}>
+    <div className="full-screen flex-center" style={{ position: "relative", padding: "100px 20px 40px" }}>
 
       {/* Background */}
       <div className="mesh-bg">
@@ -91,13 +92,10 @@ export const Appointment = () => {
       </div>
 
       <motion.div
-        className="glass-panel"
+        className="glass-panel responsive-grid"
         style={{
           maxWidth: "1100px",
           width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-          gap: "50px",
           padding: "40px",
           borderRadius: "30px",
           position: "relative",
@@ -175,7 +173,7 @@ export const Appointment = () => {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* PERSONAL INFO */}
-            <motion.div variants={itemVariants} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+            <motion.div variants={itemVariants} className="form-grid-2">
               <div className="glass-input-group" style={{ position: "relative" }}>
                 <FaUser style={{ position: "absolute", top: "50%", left: "15px", transform: "translateY(-50%)", color: "#94a3b8" }} />
                 <input name="name" type="text" placeholder="Full Name" value={formData.name} onChange={handleChange} required className="glass-input" style={{ width: "100%", padding: "14px 14px 14px 40px", borderRadius: "12px" }} />
@@ -248,6 +246,6 @@ export const Appointment = () => {
           </form>
         )}
       </motion.div>
-    </div>
+    </div >
   );
 };

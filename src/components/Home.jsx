@@ -87,7 +87,8 @@ export const Home = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={stagger}
-          style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px" }}
+          className="responsive-grid"
+          style={{ maxWidth: "1200px", margin: "0 auto" }}
         >
           {[
             { icon: <FaUserMd />, title: "Expert Dentists", desc: "Top-tier professionals dedicated to your care." },

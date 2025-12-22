@@ -192,6 +192,18 @@ export function Nav() {
                 {path === '/' ? 'Home' : path.replace('/', '').charAt(0).toUpperCase() + path.slice(2)}
               </Link>
             ))}
+
+            {/* Mobile Admin Link */}
+            {user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                onClick={() => setIsOpen(false)}
+                style={{ color: "#d946ef", fontWeight: "bold", textDecoration: "none", fontSize: "1.2rem", padding: "10px" }}
+              >
+                Admin Panel
+              </Link>
+            )}
+
             {!user ? (
               <Link to="/login" onClick={() => setIsOpen(false)}>
                 <button className="btn-gradient" style={{ padding: "10px 40px", borderRadius: "30px" }}>Login</button>
