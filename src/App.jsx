@@ -19,6 +19,7 @@ import { ForgotPassword } from "./components/ForgotPassword";
 import { ResetPassword } from "./components/ResetPassword";
 
 import { Toaster } from 'react-hot-toast';
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   useEffect(() => {
@@ -46,6 +47,7 @@ function App() {
           }
         }}
       />
+      <ScrollToTop />
       <Routes>
 
         {/* PUBLIC / USER ROUTES */}

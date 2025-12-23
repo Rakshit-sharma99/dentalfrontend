@@ -49,12 +49,12 @@ export const Home = () => {
           transition={{ duration: 1 }}
           style={{ textAlign: "center", zIndex: 10, padding: "0 20px" }}
         >
-          <h5 style={{ color: "#60a5fa", letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px", fontWeight: "bold" }}>Welcome to the Future</h5>
+          <h5 style={{ color: "#60a5fa", letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px", fontWeight: "bold" }}>MODERN CARE. REAL RESULTS</h5>
           <h1 className="text-gradient" style={{ fontSize: "clamp(3rem, 5vw, 5rem)", fontWeight: "800", marginBottom: "30px", lineHeight: "1.1" }}>
             Designing Smiles<br />Changing Lives
           </h1>
           <p style={{ fontSize: "1.2rem", color: "#94a3b8", maxWidth: "600px", margin: "0 auto 40px" }}>
-            We blend art and science to create stunning, healthy smiles in a relaxing, spa-like environment.
+            From routine care to advanced treatments, we focus on comfort, trust, and results—helping you smile freely every day.
           </p>
 
           <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
@@ -65,7 +65,7 @@ export const Home = () => {
               className="btn-gradient"
               style={{ padding: "16px 32px", borderRadius: "50px", fontSize: "1.1rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}
             >
-              Book Application <FaArrowRight />
+              Book Appointment <FaArrowRight />
             </motion.button>
 
             <motion.button
